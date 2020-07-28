@@ -1,0 +1,25 @@
+<div class="row justify-content-center">
+  
+  <div class="tag">
+    <div class="row tag_index_row justify-content-between">
+      
+      <% @tags.each.with_index(1) do |t, i| %>
+        <div class="col tag_index">
+          
+          <div class="tags_container">
+            
+            <%= render partial: yield(:tags_checkbox), locals: { t: t } %>
+            <%= label_tag :tags, "#{truncate(t.tag_title, length: 8)}", for: "[tags][#{t.id}]",class:"tags_label" %>
+          
+          </div>
+        </div>
+      
+        <% if i % 2 == 0 %>
+          </div>
+          <div class="row tag_index_row">
+        <% end %>
+        
+      <% end %>
+    </div>
+  </div>
+</div>

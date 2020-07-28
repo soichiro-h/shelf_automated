@@ -1,0 +1,144 @@
+<% provide(:uploader, "book[image]") %>
+<% provide(:uploader_icon, "far fa-image") %>
+
+  <%= form_for(@book) do |f| %>
+  
+    <input type="hidden" name="user_id" value="<%= @user.id %>">
+    <%= f.hidden_field :purchase_url, :value => yield(:purchase_url) %>
+   
+  <div class="row">
+    <div class="col-3 book_image">  
+      <!--image-->
+      <% if !yield(:image).blank? %>
+        <%= image_tag yield(:image) %> 
+        <%= f.hidden_field :image, :value => yield(:image) %>
+      <% else %>
+        <%= image_tag 'no_img_book.png' %> 
+      <% end %>
+    </div>
+    
+    <div class="col-9">  
+      <div class="row justify-content-between">
+        <div class="col-5">
+          <!--title-->
+          <div class="field">
+            <%= f.label :title, class:"form_notitle" %>
+            <%= f.text_field :title, value: yield(:title), class:"underlined_form" %>
+          </div>
+        </div>
+        
+        <div class="col-4">
+          <!--price-->
+          <div class="field">
+            <%= f.label :￥, class:"price_label" %>
+            <%= f.text_field :price, value: yield(:price), class:"price_field underlined_form" %>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row justify-content-start">
+        <!--proper_title-->
+        <%= f.label :proper_title, class:"form_notitle" %>
+        <%= f.text_field :proper_title, value:"#{yield(:proper_title)}", placeholder:"公式タイトル、サブタイトル等", class:"underlined_form" %>
+      </div>
+      
+      <div class="row justify-content-start">
+        <!--author-->
+        <%= f.label :author, class:"form_notitle" %>
+        <%= f.text_field :author, value:"#{yield(:author)}", placeholder:"著者", class:"underlined_form" %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row justify-content-start book_img_uploader">
+    <!--file-->
+    <%= f.file_field :image, class: "img_uploader uploader_info" %>
+    <%= render 'shared/uploader' %>
+    
+  </div>
+  
+  <div class="row justify-content-center">
+    <!--memo-->
+    <div class="field">
+      <%= f.label :メモ, class:"standard_form_label" %><br />
+      <%= f.text_area :memo, class:"standard_form form_textarea" %>
+    </div>
+  </div>  
+  
+  <div class="row justify-content-center">
+    <!--summary-->
+    <div class="field">
+      <%= f.label :要約, class:"standard_form_label" %><br />
+      <%= f.text_area :summary, class:"standard_form form_textarea" %>
+    </div>
+  </div>
+  
+  
+  
+  <div class="section video_seciton">
+    
+    <div class="row justify-content-start">
+      <h5 class="section_title">関連動画</h5>
+      <button type="button" id="btn_plus_video" class="btn-plus" onclick="addVideo_url()">
+        <i class="fas fa-plus fa-lg"></i>
+      </button>
+    </div>
+  
+    <div class="row justify-content-center">
+      <!--videos-->
+      
+      <% if !@youtube.blank? %>
+        
+        <% @youtube.each.with_index(1) do |yt, i| %>
+          
+          <%= render partial: yield(:youtube_links), locals: { i: i, yt: yt } %>
+          
+          
+        <% end %>
+ 
+      <% end %>
+      
+      <div id="last"></div>
+    </div>
+    
+  </div>
+  
+  <div class="section tag_section">
+  
+    <div class="row justify-content-start">
+      <!--tags-->
+      <h5 class="section_title"><i class="fas fa-tags"></i>タグ</h5>
+    </div> 
+     
+     <%= render 'books/tags_index' %> 
+    
+  </div>
+  
+  <div class="row justify-content-start section_own-fav">
+    
+    <!--own-->
+    <div class="">
+      <div class="wrapper">
+        <%= f.check_box :own, id: "own_checkbox" %>
+        <%= f.label :入手済み, for: "own_checkbox", class: "own_label labels" %>
+      </div>
+    </div>
+      
+    <!--fav-->
+    <div class="">
+      <div class="wrapper">
+        <%= f.check_box :favorite, id: "fav_checkbox" %>
+        <%= f.label :お気に入り, for: "fav_checkbox", class: "fav_label labels" %>
+      </div>
+    </div>
+    
+  </div>
+  
+  <div class="row justify-content-end btn_wrapper">
+    <!--submit-->
+    <button type="button" class="btn btn_bayoux bottom_btn btn_back_save" onclick="toBackPage()" >戻る</button>
+    <button type="button" class="btn btn_skyblue bottom_btn btn_back_save" onclick="submit()" >保存</button>
+  </div>
+  
+  <% end %>
+  

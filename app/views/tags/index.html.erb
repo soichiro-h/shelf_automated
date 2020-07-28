@@ -1,0 +1,84 @@
+<% provide(:navbar, "fixed-top") %>
+
+  <div id="tag_page" class="container" >
+    
+    <div class="row">
+      <div class="page_title_card">
+        <h4 class="default_title"><i class="fas fa-tags"></i> タグ</h4>
+      </div>
+      <button type="button" id="btn_plus_tag" class="btn-plus" data-toggle="modal" data-target="#create_tag">
+        <i class="fas fa-plus fa-lg"></i>
+        </button>
+    
+    </div>
+  
+  
+      <div class="modal fade" id="create_tag" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title default_title" id="exampleModalLabel">タイトル</h5>
+              
+            </div>
+            
+            <div class="modal-body popup_new_tag">
+            
+              <form role="form" action="/tag-new" method="post">
+              <input type="hidden" name="user_id" value="<%= @user.id %>">
+              <input type="text" class="new_tag_title modal_field" name="new_tag_title" placeholder="例:　実用書、ライトノベル、英語 etc..." size="40">
+              
+            </div>
+            
+            <div class="modal-footer">
+               
+              <p class="error_modal"><%= @error_msg %></p>
+           
+              <button type="button" class="btn btn-secondary btn_modal" data-dismiss="modal" onclick="clearErrors()">戻る</button>
+              <button type="submit" class="btn btn_skyblue btn_modal" onclick="tagError()" >追加</button>
+            
+              </form>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+     
+    <div id="tags_card">
+      
+      <form action="/tags" method="post" class="tag_form">
+        
+        <input type="hidden" name="user_id" value="<%= @user.id %>">
+        
+          <div id="tags" class="container">
+  
+              
+            <div class="tag">
+              <div class="row">
+                
+              <% @tags.each.with_index(1) do |t, i| %>
+                <div class="tag_col col-6">
+                  
+                    <div class="tag_wrapper" >
+                      <input type="text" class="tag_field" name="<%= t.id %>[tag_title]" value="<%= t.tag_title %>" size="16" onblur="saveTags()">
+                      <i><%= link_to "", "/tag/#{t.id}", class: "fas fa-times btn_bayouxx delete_tag", method: :delete, data: { confirm: "タグを削除しますか？" }  %></i>
+                    </div>
+                  
+                </div>
+                
+                <% if i % 4 == 0 %>
+                  </div>
+                  <div class="row">
+                <% end %>
+                
+              <% end %>
+              </div>
+            </div>
+          </div>
+      
+        <button id="submit_form_tags" type="submit" value=""></button>
+      </form>
+      
+    </div>
+</div>
