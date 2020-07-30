@@ -28,6 +28,6 @@ jobs:
             - vendor/bundle
 
       - run: mv config/database.yml.ci config/database.yml
-      - run: bundle exec rails db:create db:migrate RAILS_ENV=tests
+      - run: bundle exec rails db:migrate RAILS_ENV=tests
       - run: bundle exec rspec
 
