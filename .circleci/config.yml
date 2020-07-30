@@ -28,6 +28,11 @@ jobs:
             - vendor/bundle
 
       - run: mv config/database.yml.ci config/database.yml
-      - run: bundle exec rails db:migrate RAILS_ENV=tests
+
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://127.0.0.1:3306 -timeout 150s
+
+      - run: bundle exec rails db:create db:migrate RAILS_ENV=tests
       - run: bundle exec rspec
 
