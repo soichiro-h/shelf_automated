@@ -1,18 +1,29 @@
 version: 2
-jobs:
-  build:
+
+defaults: &defaults
+    working_directory: ~/project
     docker:
       - image: circleci/ruby:2.6.3-node-browsers
+        environment:
+         BUNDLE_JOBS: 2
+         BUNDLE_RETRY: 2
+         BUNDLE_PATH: vendor/bundle
+         RAILS_ENV: test
+         REVIEWDOG_VERSION: 0.9.11
 
       - image: circleci/mysql:5.7
         environment:
           - MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
           - MYSQL_ROOT_HOST: '%'
 
-    working_directory: ~/project
+jobs:
+  bundle_install:
+    <<: *defaults
 
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/projecct
 
       - restore_cache:
           keys:
@@ -20,15 +31,32 @@ jobs:
             - gem-cache-{{ arch }}-{{ .Branch }}
             - gem-cache
 
-      - run: bundle install
+      - run:
+          name:  bundle install
+          command: bundle check || bundle install --clean
 
       - save_cache:
           key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
           paths:
             - ./vendor/bundle
 
-      - run: mv config/database.yml.ci config/database.yml 
-      - run: bundle exec rails db:create db:migrate RAILS_ENV=test
+      - persist_to_workspace:
+          root: .
+          paths: vendor/bundle
+
+  rails_minitest:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+
+      - run:
+          name: Database setup
+          command: |
+            mv config/database.yml.ci config/database.yml 
+            bundle exec rails db:create db:migrate RAILS_ENV=test
+
       - run:
           name: run tests
           command: |
@@ -49,3 +77,13 @@ jobs:
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+
+workflows:
+  version: 2
+  continuous-integration:
+    jobs:
+      - bundle_install
+      - rails_minitest:
+          requires:
+            - bundle_install
+
