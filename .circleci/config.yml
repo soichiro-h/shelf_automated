@@ -3,10 +3,6 @@ jobs:
   build:
     docker:
       - image: circleci/ruby:2.6.3-node-browsers
-        environment:
-          - RAILS_ENV: 'test'
-          - DB_HOST=127.0.0.1
-          - DB_PORT=3306
 
       - image: circleci/mysql:5.7
         environment:
@@ -17,11 +13,6 @@ jobs:
 
     steps:
       - checkout
-
       - run: bundle install
-
-      - run: mv config/database.yml.ci config/database.yml
-
-      - run: bundle exec rails db:create db:migrate RAILS_ENV=tests
-      - run: bundle exec rspec
-
+      - run: bundle exec rails db:create db:migrate RAILS_ENV=test
+      - run: bundle exec rails rspec
