@@ -13,7 +13,20 @@ jobs:
 
     steps:
       - checkout
+
+      - restore_cache:
+          keys:
+            - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+            - gem-cache-{{ arch }}-{{ .Branch }}
+            - gem-cache
+
       - run: bundle install
+
+      - save_cache:
+          key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ./vendor/bundle
+
       - run: mv config/database.yml.ci config/database.yml 
       - run: bundle exec rails db:create db:migrate RAILS_ENV=test
       - run:
