@@ -5,6 +5,9 @@ jobs:
       - image: circleci/ruby:2.6.3-node-browsers
         environment:
           - RAILS_ENV: 'test'
+          - DB_HOST=127.0.0.1
+          - DB_PORT=3306
+
       - image: circleci/mysql:5.7
         environment:
           - MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
@@ -16,7 +19,7 @@ jobs:
       - checkout
 
       - run:
-          name: dockerize のインストール
+          name: install dockerize
           command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.3.0
@@ -37,7 +40,7 @@ jobs:
 
       - run:
           name: Wait for DB
-          command: dockerize -wait tcp://127.0.0.1:3306 -timeout 150s
+          command: dockerize -wait tcp://127.0.0.1:3306 -timeout 2m
 
       - run: bundle exec rails db:create db:migrate RAILS_ENV=tests
       - run: bundle exec rspec
