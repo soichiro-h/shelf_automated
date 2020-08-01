@@ -6,7 +6,8 @@
 
 # Ignore bundler config.
 /.bundle
-/.env
+/.env.development
+/.env.production
 /config/database.yml
 
 # Ignore all logfiles and tempfiles.
